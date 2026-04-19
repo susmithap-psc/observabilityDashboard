@@ -7,6 +7,7 @@ import Dashboard from './pages/Dashboard';
 import Events from './pages/Events';
 import Projects from './pages/Projects';
 import Integrations from './pages/Integrations';
+import ProjectDetail from './pages/ProjectDetail';
 import AIDigest from './pages/AIDigest';
 import Settings from './pages/Settings';
 import Layout from './components/Layout';
@@ -70,6 +71,7 @@ export default function App() {
                   <Route path="/" element={<Dashboard />} />
                   <Route path="/events" element={<Events />} />
                   <Route path="/projects" element={<Projects />} />
+                  <Route path="/projects/:projectId" element={<ProjectDetail />} />
                   <Route path="/integrations" element={<Integrations />} />
                   <Route path="/ai-digest" element={<AIDigest />} />
                   <Route path="/settings" element={<Settings />} />

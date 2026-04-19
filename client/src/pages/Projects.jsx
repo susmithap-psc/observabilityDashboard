@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../lib/api';
 import { useWorkspace } from '../context/WorkspaceContext';
@@ -92,9 +93,13 @@ export default function Projects() {
               </div>
 
               <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+                <Link to={`/projects/${project._id}`} className="btn btn-secondary btn-sm">
+                  View Details
+                </Link>
                 <button
                   className="btn btn-danger btn-sm"
-                  onClick={() => {
+                  onClick={(e) => {
+                    e.preventDefault();
                     if (confirm('Delete this project?')) deleteMutation.mutate(project._id);
                   }}
                 >

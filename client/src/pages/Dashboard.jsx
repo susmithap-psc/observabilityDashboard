@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area, PieChart, Pie, Cell } from 'recharts';
 import api from '../lib/api';
 import { useWorkspace } from '../context/WorkspaceContext';
+import ActivityTimeline from '../components/ActivityTimeline';
 
 const COLORS = ['#6366f1', '#10b981', '#f59e0b', '#ef4444', '#3b82f6', '#a855f7'];
 
@@ -188,6 +189,8 @@ export default function Dashboard() {
                 </Pie>
                 <Tooltip
                   contentStyle={{ background: '#1a2236', border: '1px solid rgba(99,102,241,0.2)', borderRadius: 8 }}
+                  itemStyle={{ color: '#f1f5f9' }}
+                  labelStyle={{ color: '#f1f5f9' }}
                 />
               </PieChart>
             </ResponsiveContainer>
@@ -219,6 +222,15 @@ export default function Dashboard() {
             )}
           </div>
         </div>
+      </div>
+
+      {/* Activity Timeline */}
+      <div className="card">
+        <div className="card-header">
+          <h3 className="card-title">🕐 Activity Timeline</h3>
+          <span style={{ fontSize: '0.78rem', color: 'var(--text-tertiary)' }}>Deploy-Error Correlation</span>
+        </div>
+        <ActivityTimeline workspaceId={wsId} />
       </div>
     </div>
   );

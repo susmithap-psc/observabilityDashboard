@@ -2,6 +2,8 @@ import { useState, useRef, useEffect } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useWorkspace } from '../context/WorkspaceContext';
+import NotificationCenter from './NotificationCenter';
+import CommandPalette from './CommandPalette';
 
 const navItems = [
   { path: '/', label: 'Overview', icon: '📊' },
@@ -17,6 +19,7 @@ export default function Layout({ children }) {
   const { currentWorkspace, workspaces, selectWorkspace } = useWorkspace();
   const navigate = useNavigate();
   const [wsDropdownOpen, setWsDropdownOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const wsRef = useRef(null);
 
   // Close dropdown when clicking outside
@@ -30,6 +33,11 @@ export default function Layout({ children }) {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  // Close mobile menu on navigation
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [children]);
+
   const handleLogout = async () => {
     await logout();
     navigate('/login');
@@ -41,8 +49,13 @@ export default function Layout({ children }) {
 
   return (
     <div className="app-layout">
+      {/* Mobile Overlay */}
+      {mobileMenuOpen && (
+        <div className="mobile-overlay" onClick={() => setMobileMenuOpen(false)} />
+      )}
+
       {/* Sidebar */}
-      <aside className="sidebar">
+      <aside className={`sidebar ${mobileMenuOpen ? 'sidebar-open' : ''}`}>
         <div className="sidebar-brand">
           <div className="sidebar-brand-icon">⚡</div>
           <span className="sidebar-brand-name">PulseBoard</span>
@@ -96,6 +109,7 @@ export default function Layout({ children }) {
               className={({ isActive }) =>
                 `sidebar-link ${isActive ? 'active' : ''}`
               }
+              onClick={() => setMobileMenuOpen(false)}
             >
               <span className="link-icon">{item.icon}</span>
               {item.label}
@@ -116,9 +130,81 @@ export default function Layout({ children }) {
       </aside>
 
       {/* Main Content */}
-      <main className="main-content">
-        {children}
-      </main>
+      <div className="main-wrapper">
+        {/* Top Header Bar */}
+        <header className="top-header">
+          <div className="top-header-left">
+            <button
+              className="mobile-menu-btn"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-label="Toggle menu"
+              id="mobile-menu-toggle"
+            >
+              <span className={`hamburger ${mobileMenuOpen ? 'active' : ''}`}>
+                <span />
+                <span />
+                <span />
+              </span>
+            </button>
+
+            <button
+              className="search-trigger"
+              onClick={() => {
+                const event = new KeyboardEvent('keydown', {
+                  key: 'k',
+                  ctrlKey: true,
+                  bubbles: true,
+                });
+                window.dispatchEvent(event);
+              }}
+              id="search-trigger"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+              </svg>
+              <span>Search...</span>
+              <kbd>Ctrl+K</kbd>
+            </button>
+          </div>
+
+          <div className="top-header-right">
+            {/* Live clock */}
+            <LiveClock />
+
+            {/* Status indicator */}
+            <div className="system-status-pill" title="System status">
+              <span className="status-dot-live" />
+              <span>Live</span>
+            </div>
+
+            {/* Notifications */}
+            <NotificationCenter />
+          </div>
+        </header>
+
+        <main className="main-content">
+          {children}
+        </main>
+      </div>
+
+      {/* Command Palette */}
+      <CommandPalette />
     </div>
+  );
+}
+
+function LiveClock() {
+  const [time, setTime] = useState(new Date());
+
+  useEffect(() => {
+    const interval = setInterval(() => setTime(new Date()), 60000);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <span className="live-clock">
+      {time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+    </span>
   );
 }

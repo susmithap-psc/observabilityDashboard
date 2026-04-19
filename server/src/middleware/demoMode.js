@@ -13,17 +13,17 @@ const DEMO_PROJECT_IDS = [genId(), genId(), genId()];
 
 const demoUser = {
   _id: DEMO_USER_ID,
-  name: 'Demo User',
-  email: 'demo@pulseboard.io',
+  name: 'Susmitha Chowdary',
+  email: 'susmitha@pulseboard.io',
   avatar: '',
   createdAt: new Date().toISOString(),
 };
 
 const demoWorkspace = {
   _id: DEMO_WORKSPACE_ID,
-  name: 'Acme Startup',
-  slug: 'acme-startup',
-  description: 'Main workspace for Acme Startup engineering team',
+  name: 'susmithap-psc',
+  slug: 'susmithap-psc',
+  description: 'Workspace for susmithap-psc projects and services',
   members: [
     { user: { ...demoUser }, role: 'owner', joinedAt: new Date().toISOString() },
   ],
@@ -34,44 +34,44 @@ const demoWorkspace = {
 const demoProjects = [
   {
     _id: DEMO_PROJECT_IDS[0],
-    name: 'Frontend App',
-    description: 'Main React frontend application',
+    name: 'pixel-perfect',
+    description: 'Pixel Perfect — UI component library and design system',
     workspace: DEMO_WORKSPACE_ID,
     status: 'healthy',
     createdBy: DEMO_USER_ID,
     integrations: {
-      github: { enabled: true, repoOwner: 'acme', repoName: 'frontend-app' },
-      sentry: { enabled: true, projectSlug: 'frontend-app', organizationSlug: 'acme' },
-      uptimeRobot: { enabled: true, monitorId: 'mon-001' },
+      github: { enabled: true, repoOwner: 'susmithap-psc', repoName: 'pixel-perfect' },
+      sentry: { enabled: true, projectSlug: 'pixel-perfect', organizationSlug: 'susmithap-psc' },
+      uptimeRobot: { enabled: true, monitorId: 'mon-pixel-001' },
     },
     alertRules: [],
     createdAt: new Date().toISOString(),
   },
   {
     _id: DEMO_PROJECT_IDS[1],
-    name: 'API Server',
-    description: 'Node.js backend API service',
+    name: 'observability-dashboard',
+    description: 'PulseBoard observability dashboard service',
     workspace: DEMO_WORKSPACE_ID,
-    status: 'degraded',
+    status: 'healthy',
     createdBy: DEMO_USER_ID,
     integrations: {
-      github: { enabled: true, repoOwner: 'acme', repoName: 'api-server' },
-      sentry: { enabled: true, projectSlug: 'api-server', organizationSlug: 'acme' },
-      uptimeRobot: { enabled: true, monitorId: 'mon-002' },
+      github: { enabled: false },
+      sentry: { enabled: false },
+      uptimeRobot: { enabled: false },
     },
     alertRules: [],
     createdAt: new Date().toISOString(),
   },
   {
     _id: DEMO_PROJECT_IDS[2],
-    name: 'Payment Service',
-    description: 'Stripe payment processing microservice',
+    name: 'api-service',
+    description: 'Backend API microservice',
     workspace: DEMO_WORKSPACE_ID,
     status: 'healthy',
     createdBy: DEMO_USER_ID,
     integrations: {
-      github: { enabled: true, repoOwner: 'acme', repoName: 'payment-service' },
-      sentry: { enabled: true, projectSlug: 'payment-service', organizationSlug: 'acme' },
+      github: { enabled: false },
+      sentry: { enabled: false },
       uptimeRobot: { enabled: false },
     },
     alertRules: [],
@@ -81,16 +81,47 @@ const demoProjects = [
 
 // Generate realistic events
 function generateDemoEvents() {
+  const branches = ['main', 'staging', 'develop', 'feature/ui-components', 'hotfix/layout-fix'];
+  const actors = ['susmithap-psc', 'dev-contributor', 'ci-bot', 'release-manager'];
+  const shas = () => crypto.randomBytes(20).toString('hex').substring(0, 7);
+
   const eventDefs = [
-    { type: 'deploy_success', severity: 'info', source: 'github', titles: ['🚀 Deploy: v2.4.1 success', '🚀 Deploy: hotfix-auth success', '🚀 Deploy: feature-dashboard success', '🚀 Deploy: v3.0.0-rc1 success'] },
-    { type: 'deploy_failed', severity: 'critical', source: 'github', titles: ['💥 Deploy: v2.5.0-beta failed', '💥 Deploy: staging-build failed'] },
-    { type: 'ci_success', severity: 'info', source: 'github', titles: ['✅ CI: Unit Tests — passed', '✅ CI: E2E Tests — passed', '✅ CI: Lint & Build — passed'] },
-    { type: 'ci_failure', severity: 'warning', source: 'github', titles: ['❌ CI: Integration Tests — failed', '❌ CI: Build — compilation error', '❌ CI: Lint check — 3 errors'] },
-    { type: 'error_new', severity: 'warning', source: 'sentry', titles: ['🐛 TypeError: Cannot read property of undefined', '🐛 ReferenceError: stripe is not defined', '🐛 SyntaxError: Unexpected token in JSON'] },
-    { type: 'error_spike', severity: 'critical', source: 'sentry', titles: ['🐛 Spike: 500 errors increased by 340%', '🐛 Spike: Auth endpoint timeout errors'] },
-    { type: 'error_regression', severity: 'warning', source: 'sentry', titles: ['🐛 Regression: Payment processing null pointer', '🐛 Regression: Database connection pool exhaustion'] },
-    { type: 'downtime_started', severity: 'critical', source: 'uptimerobot', titles: ['🔴 Uptime: api.acme.io is DOWN', '🔴 Uptime: payments.acme.io is DOWN'] },
-    { type: 'downtime_resolved', severity: 'info', source: 'uptimerobot', titles: ['🟢 Uptime: api.acme.io is UP', '🟢 Uptime: payments.acme.io is UP (after 12min)'] },
+    { type: 'deploy_success', severity: 'info', source: 'github',
+      titles: ['🚀 Deploy: pixel-perfect v1.2.0 success', '🚀 Deploy: hotfix-layout success', '🚀 Deploy: feature-components success', '🚀 Deploy: v2.0.0-rc1 success'],
+      meta: () => ({ environment: 'production', state: 'success', branch: branches[Math.floor(Math.random()*branches.length)], commitSha: shas(), actor: actors[Math.floor(Math.random()*actors.length)], deployUrl: 'https://pixel-perfect.vercel.app' }),
+    },
+    { type: 'deploy_failed', severity: 'critical', source: 'github',
+      titles: ['💥 Deploy: pixel-perfect v1.3.0-beta failed', '💥 Deploy: staging-build failed'],
+      meta: () => ({ environment: 'staging', state: 'failure', branch: branches[Math.floor(Math.random()*branches.length)], commitSha: shas(), errorCode: 'BUILD_FAILED', actor: actors[Math.floor(Math.random()*actors.length)] }),
+    },
+    { type: 'ci_success', severity: 'info', source: 'github',
+      titles: ['✅ CI: Unit Tests — passed', '✅ CI: Visual Regression Tests — passed', '✅ CI: Lint & Build — passed'],
+      meta: () => ({ workflowName: 'CI Pipeline', branch: branches[Math.floor(Math.random()*branches.length)], conclusion: 'success', commitSha: shas(), durationMs: Math.floor(Math.random()*120000)+30000, actor: actors[Math.floor(Math.random()*actors.length)] }),
+    },
+    { type: 'ci_failure', severity: 'warning', source: 'github',
+      titles: ['❌ CI: Component Tests — failed', '❌ CI: Build — compilation error', '❌ CI: Lint check — style violations'],
+      meta: () => ({ workflowName: 'CI Pipeline', branch: branches[Math.floor(Math.random()*branches.length)], conclusion: 'failure', commitSha: shas(), failedStep: 'test:components', actor: actors[Math.floor(Math.random()*actors.length)] }),
+    },
+    { type: 'error_new', severity: 'warning', source: 'sentry',
+      titles: ['🐛 TypeError: Cannot read property of undefined', '🐛 ReferenceError: component is not defined', '🐛 SyntaxError: Unexpected token in JSX'],
+      meta: () => ({ level: 'error', platform: 'javascript', count: Math.floor(Math.random()*50)+1, culprit: 'src/components/Grid.jsx', fingerprint: crypto.randomBytes(8).toString('hex'), firstSeen: new Date(Date.now()-Math.random()*3600000).toISOString() }),
+    },
+    { type: 'error_spike', severity: 'critical', source: 'sentry',
+      titles: ['🐛 Spike: 500 errors increased by 340%', '🐛 Spike: Render timeout errors'],
+      meta: () => ({ level: 'fatal', platform: 'javascript', count: Math.floor(Math.random()*500)+100, spikePercent: Math.floor(Math.random()*400)+100, culprit: 'src/hooks/useLayout.js', affectedUsers: Math.floor(Math.random()*200)+10 }),
+    },
+    { type: 'error_regression', severity: 'warning', source: 'sentry',
+      titles: ['🐛 Regression: Layout rendering null pointer', '🐛 Regression: State management memory leak'],
+      meta: () => ({ level: 'error', platform: 'javascript', count: Math.floor(Math.random()*80)+5, culprit: 'src/utils/layout.js', lastResolvedAt: new Date(Date.now()-Math.random()*86400000*7).toISOString() }),
+    },
+    { type: 'downtime_started', severity: 'critical', source: 'uptimerobot',
+      titles: ['🔴 Uptime: pixel-perfect.vercel.app is DOWN', '🔴 Uptime: api.pixel-perfect.dev is DOWN'],
+      meta: () => ({ monitorName: 'pixel-perfect Health Check', monitorUrl: 'https://pixel-perfect.vercel.app', alertType: 'Down', responseTime: null }),
+    },
+    { type: 'downtime_resolved', severity: 'info', source: 'uptimerobot',
+      titles: ['🟢 Uptime: pixel-perfect.vercel.app is UP', '🟢 Uptime: api.pixel-perfect.dev is UP (after 8min)'],
+      meta: () => ({ monitorName: 'pixel-perfect Health Check', monitorUrl: 'https://pixel-perfect.vercel.app', alertType: 'Up', alertDuration: `${Math.floor(Math.random()*30)+1}m`, responseTime: `${Math.floor(Math.random()*200)+50}ms` }),
+    },
   ];
 
   const events = [];
@@ -98,7 +129,8 @@ function generateDemoEvents() {
 
   for (let i = 0; i < 80; i++) {
     const def = eventDefs[Math.floor(Math.random() * eventDefs.length)];
-    const project = demoProjects[Math.floor(Math.random() * demoProjects.length)];
+    // Events are primarily tied to pixel-perfect (the connected project)
+    const project = demoProjects[0];
     const title = def.titles[Math.floor(Math.random() * def.titles.length)];
     const hoursAgo = Math.floor(Math.random() * 168);
 
@@ -112,7 +144,7 @@ function generateDemoEvents() {
       workspace: DEMO_WORKSPACE_ID,
       title,
       description: `Event from ${def.source}: ${title.replace(/[^\w\s]/g, '')}`,
-      metadata: { demo: true, index: i },
+      metadata: def.meta(),
       status: Math.random() > 0.6 ? (Math.random() > 0.5 ? 'acknowledged' : 'resolved') : 'open',
       aiSummary: null,
       occurredAt: new Date(now - hoursAgo * 60 * 60 * 1000).toISOString(),
@@ -208,6 +240,26 @@ function createDemoRouter() {
     const idx = demoProjects.findIndex(p => p._id === req.params.projectId);
     if (idx >= 0) demoProjects.splice(idx, 1);
     res.json({ success: true, data: { message: 'Project deleted' } });
+  };
+
+  // Get single project
+  handlers['GET /api/projects/:projectId'] = (req, res) => {
+    const project = demoProjects.find(p => p._id === req.params.projectId);
+    if (!project) return res.status(404).json({ success: false, error: 'Project not found' });
+    res.json({ success: true, data: project });
+  };
+
+  // Update project integrations
+  handlers['PUT /api/projects/:projectId/integrations'] = (req, res) => {
+    const project = demoProjects.find(p => p._id === req.params.projectId);
+    if (!project) return res.status(404).json({ success: false, error: 'Project not found' });
+
+    const { github, sentry, uptimeRobot } = req.body;
+    if (github) project.integrations.github = { ...project.integrations.github, ...github };
+    if (sentry) project.integrations.sentry = { ...project.integrations.sentry, ...sentry };
+    if (uptimeRobot) project.integrations.uptimeRobot = { ...project.integrations.uptimeRobot, ...uptimeRobot };
+
+    res.json({ success: true, data: project });
   };
 
   // INTEGRATIONS

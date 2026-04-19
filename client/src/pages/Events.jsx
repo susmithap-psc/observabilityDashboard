@@ -190,6 +190,36 @@ export default function Events() {
               Occurred: {new Date(selectedEvent.occurredAt).toLocaleString()}
             </p>
 
+            {/* Rich Metadata Panel */}
+            {selectedEvent.metadata && Object.keys(selectedEvent.metadata).filter(k => k !== 'demo').length > 0 && (
+              <div style={{
+                background: 'var(--bg-tertiary)', borderRadius: 'var(--radius-md)',
+                padding: 16, marginBottom: 20, border: '1px solid var(--border-secondary)',
+              }}>
+                <div style={{
+                  fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase',
+                  letterSpacing: '0.06em', color: 'var(--text-tertiary)', marginBottom: 10,
+                }}>
+                  Event Metadata
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 8 }}>
+                  {Object.entries(selectedEvent.metadata).filter(([k]) => k !== 'demo').map(([key, value]) => (
+                    <div key={key} style={{
+                      padding: '8px 10px', background: 'var(--bg-card)',
+                      borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-secondary)',
+                    }}>
+                      <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 2 }}>
+                        {key.replace(/([A-Z])/g, ' $1').trim()}
+                      </div>
+                      <div style={{ fontSize: '0.8rem', color: 'var(--text-primary)', wordBreak: 'break-all' }}>
+                        {typeof value === 'object' ? JSON.stringify(value) : String(value)}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Action Buttons */}
             <div style={{ display: 'flex', gap: 8, marginBottom: 20, flexWrap: 'wrap' }}>
               {selectedEvent.status === 'open' && (
